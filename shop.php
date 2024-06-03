@@ -1,7 +1,17 @@
+<?php 
+@include 'config.php';
+
+?>
 <html> 
     <head>
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+    </script>
     </head>
     <body>
         <section class="header">
@@ -11,7 +21,7 @@
                     <ul>
                         <li><a href="index.php">HOME</a></li>
                         <li><a href="shop.php">SHOP</a></li>
-                        <li><a href="#">ORDERS</a></li>
+                        <li><a href="orders.php">ORDERS</a></li>
                         <li class="tooltip-container"><a href="login.php"><i class="fa-solid fa-user"></i><span class="tooltip">Sign In</span></a></li>
                     </ul>
                 </div>
@@ -36,33 +46,78 @@
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <script src="search.js"></script>
-        <div class="cart">
-            <li class="tooltip-container"><a href="#"><i class="fa-solid fa-cart-shopping"></i><span class="tooltip">Cart</span></a></li>
-            <p>0</p>
-        </div> 
-</div>     
-    <div class="container-products">
-        <div id="root"></div>
-        <script src="cart.js"></script>
-    </div>   
-<!-- Modal Structure -->
-<div id="preview-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span id="close-modal-btn" class="modal-close">&times;</span>
-        <div class="product-info">
-            <img id="modal-image" src="" alt="Product Image">
-            <h2 id="modal-title"></h2>
-            <p id="modal-price"></p> <!-- New element to display the product's price -->
-            <p id="modal-description"></p>
-            <button id="add-to-cart-btn" class="add-to-cart-btn">Add to Cart</button>
+        <div class="cart-icon" onclick="toggleSidebar(event)">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>3</span>
+        </div>
+</div> 
+
+<!---------products-------->
+<section class="products">
+        <div class="container-products">
+            <div id="root">
+                <?php
+                $sql = "SELECT item_id, item_name, item_price, item_image, item_description FROM item";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    // Output data of each row
+                    while($row = $result->fetch_assoc()) {
+                        echo "<div class='box' data-id='".$row['item_id']."' data-name='".$row['item_name']."' data-price='".$row['item_price']."' data-image='img/".$row['item_image']."' data-description='".$row['item_description']."'>";
+                        echo "<div class='img-box'><img src='img/".$row['item_image']."'></div>";
+                        echo "<div class='left'>";
+                        echo "<p>".$row['item_name']."</p>";
+                        echo "<h2>$".$row['item_price']."</h2>";
+                        echo "<button class='button-style' onclick='showModal(this)'>SEE PREVIEW<span class='span-effect'></span></button>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
+                } else {
+                    echo "0 results";
+                }
+                ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Structure -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalImage" src="" alt="Item Image">
+                </div>
+                <div class="modal-details">
+                    <h2 id="modalName"></h2>
+                    <p id="modalPrice"></p>
+                    <p id="modalDescription"></p>
+                    <button id="addToCartBtn">Add to Cart</button>
+                </div>
+            </div>
         </div>
     </div>
-    <script src="preview.js"></script>
+
+    <script src="modal.js"></script>
+<!---------sidebar-------->
+<div class="sidevar" id="sidebar">
+        <div class="sidebar-close" onclick="toggleSidebar()">
+            <i class="fa-solid fa-close"></i>
+            </div>
+    <div class="cart-menu">
+        <h3>My Cart</h3>
+        <div class="cart-items"></div>
+    </div>
+    <div class="sidebar---footer">
+        <div class="total---amount">
+            <h5>Total</h5>
+            <div class="cart-total">$0.00</div>
+        </div>
+        <button id="checkoutBtn" class="checkout-btn">Checkout</button>
+    </div>
 </div>
 
 
-
-    
 <!----------footer--------->
 <footer>
     <section class="footer">
@@ -97,6 +152,7 @@
         </div>
     </section>
 </footer>
+<script src="sidebar.js"></script>
     </body>   
     
 </html>
