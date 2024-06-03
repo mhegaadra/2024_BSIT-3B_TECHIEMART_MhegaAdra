@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch orders from the database including item information for the logged-in user
-$sql = "SELECT o.item_name, o.total_price, o.quantity, o.item_image
+$sql = "SELECT o.item_name, o.total_price, o.quantity, o.item_image, o.status
         FROM `order` o
         WHERE o.user_id = ?";
 $stmt = $conn->prepare($sql);
@@ -30,15 +30,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $orders = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
-
-// Fetch user information from users_info table for the logged-in user
-$user_info_sql = "SELECT * FROM `users_info` WHERE user_id = ?";
-$user_info_stmt = $conn->prepare($user_info_sql);
-$user_info_stmt->bind_param("i", $user_id);
-$user_info_stmt->execute();
-$user_info_result = $user_info_stmt->get_result();
-$user_info = $user_info_result->fetch_assoc();
-$user_info_stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -114,18 +105,18 @@ $user_info_stmt->close();
         </div>
     </section>
 
-    <!-- Display orders -->
-    <!-- Display orders -->
-    <div class="orders-container">
+  <!-- Display orders -->
+  <div class="orders-container">
         <h1>Track Orders</h1>
         <?php if (!empty($orders)): ?>
             <?php foreach ($orders as $order): ?>
                 <div class="order-item">
-                <img src="img/<?php echo $order['item_image']; ?>" alt="<?php echo $order['item_name']; ?>">
+                    <img src="img/<?php echo $order['item_image']; ?>" alt="<?php echo $order['item_name']; ?>">
                     <div class="order-item-content">
                         <h2><?php echo $order['item_name']; ?></h2>
                         <p>Price: <?php echo $order['total_price']; ?></p>
                         <p>Quantity: <?php echo $order['quantity']; ?></p>
+                        <p>Status: <?php echo $order['status']; ?></p> 
                     </div>
                 </div>
             <?php endforeach; ?>

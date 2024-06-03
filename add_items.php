@@ -23,6 +23,27 @@ if (isset($_POST['add_item'])) {
         }
     }
 }
+
+if (isset($_POST['remove_item'])) {
+    $item_id = mysqli_real_escape_string($conn, $_POST['item_id']);
+
+    $delete_image_query = "SELECT item_image FROM item WHERE item_id = '$item_id'";
+    $delete_image_result = mysqli_query($conn, $delete_image_query);
+    $item_image = mysqli_fetch_assoc($delete_image_result)['item_image'];
+    $delete_image_path = 'img/' . $item_image;
+
+    $delete_query = "DELETE FROM item WHERE item_id = '$item_id'";
+    $delete_result = mysqli_query($conn, $delete_query);
+
+    if ($delete_result) {
+        if (file_exists($delete_image_path)) {
+            unlink($delete_image_path);
+        }
+        $message[] = 'Item removed successfully';
+    } else {
+        $message[] = 'Could not remove the item';
+    }
+}
 ?>
 
 <!DOCTYPE html>
