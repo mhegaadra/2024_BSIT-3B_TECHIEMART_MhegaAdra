@@ -13,6 +13,16 @@ if(isset($_SESSION['cart_items'])) {
 } else {
     $cartItems = [];
 }
+
+// Check if the user is logged in
+if(!isset($_SESSION['user_id'])) {
+    // Redirect the user to the login page if they are not logged in
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
 ?>
 
 <!DOCTYPE html>
@@ -133,18 +143,21 @@ if(isset($_SESSION['cart_items'])) {
         <div class="payment-options">
             <h2>Payment Options</h2>
             <form method="POST" action="order_process.php">
-                <label for="payment">Select Payment Method:</label>
-                <select name="payment" id="payment" required>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="PayPal">PayPal</option>
-                    <option value="Cash on Delivery">Cash on Delivery</option>
-                </select>
-                
-                <label for="phone">Phone Number:</label>
-                <input type="tel" name="phone" id="phone" placeholder="Enter your phone number" required>
+    <!-- Add a hidden input field to store the user_id -->
+    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
 
-                <button type="submit">Submit Order</button>
-            </form>
+    <label for="payment">Select Payment Method:</label>
+    <select name="payment" id="payment" required>
+        <option value="Credit Card">Credit Card</option>
+        <option value="PayPal">PayPal</option>
+        <option value="Cash on Delivery">Cash on Delivery</option>
+    </select>
+    
+    <label for="phone">Phone Number:</label>
+    <input type="tel" name="phone" id="phone" placeholder="Enter your phone number" required>
+
+    <button type="submit">Submit Order</button>
+</form>
         </div>
     </div>
 
